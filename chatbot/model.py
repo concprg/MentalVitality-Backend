@@ -15,9 +15,9 @@ from langchain.memory import ConversationBufferWindowMemory
 from pydantic import BaseModel
 
 DATA_PATH = 'data/'
-DB_FAISS_PATH = '/chatbot/vectorstore/db_faiss'
+DB_FAISS_PATH = 'chatbot/vectorstore/db_faiss'
 
-MODEL_PATH = "models/mythologic-mini-7b.ggmlv3.q3_K_L.bin"
+MODEL_PATH = "chatbot/models/nous-hermes-llama-2-7b.Q5_K_M.gguf"
 MODEL_NAME = MODEL_PATH.partition(".")[0].partition(PathSep)[-1]
 MODEL_KWARGS = {"max_new_tokens": 1024, "temperature": 0.8}
 
@@ -96,7 +96,14 @@ def therapist_bot_with_rag():
     return qa
 
 def generate_therapist_response_with_rag(query):
-    qa_result = therapist_bot_with_rag()
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL,
+                                       model_kwargs=EMBEDDING_MODEL_ARGS)
+    db = FAISS.load_local(DB_FAISS_PATH, embeddings)
+
+    llm = load_llm()
+    qa_prompt = set_custom_prompt(custom_prompt_template=instruct_prompt_template.format(**{"instruction":therapist_prompt_instruction, "input":therapist_prompt_input}))
+    qa_result = conv_retr_chain(llm, qa_prompt, db)
+
     while True:
         if query == "exit" or query == "quit" or query == "q" or query == "f":
             print('Exiting')
@@ -123,5 +130,5 @@ def generate_openai_response(message):
             "role":"assistant",
             "content":message,
         })
-    data = {choices}
+    data = {"choices":choices}
     return data

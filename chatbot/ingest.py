@@ -6,7 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 
 DATA_PATH = 'data/'
-DB_FAISS_PATH = 'vectorstore/db_faiss'
+DB_FAISS_PATH = 'chatbot/vectorstore/db_faiss'
 EMBEDDING_MODEL = "thenlper/gte-small"
 EMBEDDING_MODEL_ARGS = model_kwargs={'device': 'cuda'}
 
