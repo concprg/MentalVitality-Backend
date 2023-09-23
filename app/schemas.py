@@ -2,18 +2,11 @@ from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 
-
-class UserLevel(str, Enum):
-    beginner = "beginner"
-    intermediate = "intermediate"
-    expert = "expert"
-
-
 class UserBase(BaseModel):
     email: str
     username: str
     age: Optional[int] = None
-    level: UserLevel = UserLevel.beginner
+    gender: str
 
 
 class UserIn(UserBase):
@@ -38,3 +31,9 @@ class TokenData(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class Screen_Test(BaseModel):
+    questions: dict
+
+class Test_Response(BaseModel):
+    responses: dict

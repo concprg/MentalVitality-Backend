@@ -1,0 +1,10 @@
+pypdf
+rank_bm25
+langchain
+accelerate
+torch
+bitsandbytes
+transformers
+sentence_transformers
+faiss_cpu
+cryptography>=3.1
