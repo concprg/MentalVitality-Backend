@@ -4,7 +4,6 @@ from os.path import sep as PathSep
 
 from langchain.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain import PromptTemplate
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import CTransformers
@@ -77,7 +76,6 @@ def conv_retr_chain(llm, prompt, db, lexical_retriever=None):
     #     retriever = EnsembleRetriever(retrievers = [db.as_retriever(search_kwargs = {"k" :2 }), lexical_retriever])
     conv_retr_chain = ConversationalRetrievalChain.from_llm(llm=llm,
                                         retriever = db.as_retriever(search_kwargs={'k': 3}),
-                                        return_source_documents = True,
                                         )
     return conv_retr_chain
 
@@ -112,8 +110,17 @@ def generate_therapist_response_with_rag(query):
         result = qa_result(
             {"question": query, "chat_history": chat_history})
         response = result["answer"]
-        chat_history.append((query, result["answer"]))
+        chat_history.append((query, response))
         return response
+
+def generate_therapist_response_without_rag(query, roles = ["Patient", "Therapist"]):
+    fmted_chat_messages = []
+    for patient_chat,  therapist_chat in chat_history:
+        fmted_chat_messages.append(f"{role[0]}: {patient_chat}")
+        fmted_chat_messages.append(f"{role[1]}: {therapist_chat}")
+    fmted_chat_history = "\n".join(fmted_chat_messages)
+    response = generate_instruct_response(therapist_prompt_instruction.format(chat_history=fmted_chat_history), therapist_prompt_input)
+
 
 def generate_instruct_response(prompt_instruction, prompt_input):
     llm = load_llm()

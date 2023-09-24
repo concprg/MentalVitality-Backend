@@ -2,3 +2,4 @@
 .env
 chatbot/data
 chatbot/models
+ngrok

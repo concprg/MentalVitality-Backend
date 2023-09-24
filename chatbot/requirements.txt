@@ -1,5 +1,4 @@
 pypdf
-rank_bm25
 langchain
 accelerate
 torch
